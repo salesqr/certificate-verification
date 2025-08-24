@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Americo</title>
+    <title>Certificate Verification - Americo</title>
     <style>
         * {
             margin: 0;
@@ -139,7 +139,7 @@
         </div>
         
         <div class="footer">
-            <p>All rights reserved.</p>
+            
             <p>For verification inquiries, contact our support team.</p>
         </div>
     </div>
@@ -156,14 +156,37 @@
         // Function to format date
         function formatDate(dateString) {
             if (!dateString) return 'N/A';
+            
+            // ✅ FIXED: Handle DD/MM/YYYY format from old soft copies
+            if (dateString.includes('/') && dateString.split('/').length === 3) {
+                const parts = dateString.split('/');
+                const day = parts[0];
+                const month = parts[1];
+                const year = parts[2];
+                
+                // Validate parts are numbers
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    // Convert DD/MM/YYYY to MM/DD/YYYY for display
+                    return `${month}/${day}/${year}`;
+                }
+            }
+            
             try {
                 const date = new Date(dateString);
+                
+                // Check if date is valid
+                if (isNaN(date.getTime())) {
+                    // If parsing failed, try to format the original string
+                    return dateString;
+                }
+                
                 return date.toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                 });
             } catch (e) {
+                // If all else fails, return the original string
                 return dateString;
             }
         }
@@ -222,5 +245,3 @@
     </script>
 </body>
 </html>
-
-
